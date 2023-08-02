@@ -1,11 +1,20 @@
-import { legacy_createStore as createStore, combineReducers } from 'redux'
-import { cashReducer } from './cashReducer'
-import { customerReducer } from './customerReducer'
-import { composeWithDevTools } from 'redux-devtools-extension'
+import {
+  legacy_createStore as createStore,
+  combineReducers,
+  applyMiddleware,
+} from 'redux'
+import countReducer from './countReducer'
+import userReducer from './userReducer'
+import createSagaMiddleware from 'redux-saga'
+import { rootWatcher } from '../saga'
+
+const sagaMiddleware = createSagaMiddleware()
 
 const rootReducer = combineReducers({
-  cash: cashReducer,
-  customers: customerReducer,
+  countReducer,
+  userReducer,
 })
 
-export const store = createStore(rootReducer, composeWithDevTools())
+export const store = createStore(rootReducer, applyMiddleware(sagaMiddleware))
+
+sagaMiddleware.run(rootWatcher)
